@@ -109,3 +109,12 @@ export interface NoteContext {
   start: number
   end: number
 }
+
+export interface UserProfile {
+  display_name: string
+  language: string
+  communication_style: string
+  custom_instructions: string
+  preferences: Record<string, unknown>
+  updated_at: string
+}

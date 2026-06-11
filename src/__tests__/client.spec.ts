@@ -201,4 +201,39 @@ describe('MindVaultClient', () => {
       expect(transport.call).toHaveBeenCalledWith('status')
     })
   })
+
+  describe('getProfile', () => {
+    it('should call profile.get and return profile', async () => {
+      const mockProfile = {
+        display_name: '小明',
+        language: 'zh-CN',
+        communication_style: 'concise',
+        custom_instructions: '',
+        preferences: {},
+        updated_at: '2026-06-11T00:00:00Z',
+      }
+      transport.call.mockResolvedValueOnce(mockProfile)
+      const result = await client.getProfile()
+      expect(result).toEqual(mockProfile)
+      expect(transport.call).toHaveBeenCalledWith('profile.get')
+    })
+  })
+
+  describe('updateProfile', () => {
+    it('should call profile.update with partial profile', async () => {
+      const partial = { display_name: 'Alex', language: 'en' }
+      const updated = {
+        display_name: 'Alex',
+        language: 'en',
+        communication_style: '',
+        custom_instructions: '',
+        preferences: {},
+        updated_at: '2026-06-11T00:01:00Z',
+      }
+      transport.call.mockResolvedValueOnce(updated)
+      const result = await client.updateProfile(partial)
+      expect(result).toEqual(updated)
+      expect(transport.call).toHaveBeenCalledWith('profile.update', partial)
+    })
+  })
 })

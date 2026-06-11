@@ -13,6 +13,7 @@ export type {
   SearchResult,
   NoteListItem,
   NoteContext,
+  UserProfile,
 } from './types.js'
 export type {
   OAuthClientConfig,

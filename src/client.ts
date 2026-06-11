@@ -52,6 +52,7 @@ import type {
   SearchResult,
   NoteListItem,
   NoteContext,
+  UserProfile,
 } from './types.js'
 
 export type {
@@ -67,6 +68,7 @@ export type {
   SearchResult,
   NoteListItem,
   NoteContext,
+  UserProfile,
   OAuthClientConfig,
   OAuthTokenSet,
   OAuthIntrospection,
@@ -337,6 +339,23 @@ export class MindVaultClient {
       path,
       range,
     }) as Promise<NoteContext>
+  }
+
+  // ============================================================
+  // User Profile
+  // ============================================================
+
+  /** 获取用户画像（AI 记忆） */
+  async getProfile(): Promise<UserProfile> {
+    return this.transport.call('profile.get') as Promise<UserProfile>
+  }
+
+  /** 更新用户画像（部分更新） */
+  async updateProfile(profile: Partial<UserProfile>): Promise<UserProfile> {
+    return this.transport.call(
+      'profile.update',
+      profile as Record<string, unknown>,
+    ) as Promise<UserProfile>
   }
 
   // ============================================================
