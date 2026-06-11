@@ -1,23 +1,23 @@
-# @mindvault/sdk
+# @aincore/sdk
 
 > TypeScript SDK for Hearth
 
-`@mindvault/sdk` 是 [Hearth](https://github.com/bzda404/hearth) 本地 AI 平台的客户端 SDK。它封装了 OAuth 2.0 + PKCE 授权流程和 UDS（Unix Domain Socket）JSON-RPC 传输层，让你的 Node.js 应用能够以类型安全的方式接入 Hearth 的模型推理、知识库管理和系统状态查询等服务。
+`@aincore/sdk` 是 [Hearth](https://github.com/bzda404/hearth) 本地 AI 平台的客户端 SDK。它封装了 OAuth 2.0 + PKCE 授权流程和 UDS（Unix Domain Socket）JSON-RPC 传输层，让你的 Node.js 应用能够以类型安全的方式接入 Hearth 的模型推理、知识库管理和系统状态查询等服务。
 
 **状态：v0.3.0**
 
 ## 安装
 
 ```bash
-npm install @mindvault/sdk
+npm install @aincore/sdk
 # 或
-pnpm add @mindvault/sdk
+pnpm add @aincore/sdk
 ```
 
 ## 快速开始
 
 ```typescript
-import { MindVaultClient } from '@mindvault/sdk'
+import { MindVaultClient } from '@aincore/sdk'
 
 const client = new MindVaultClient()
 
@@ -61,7 +61,7 @@ const results = await client.searchKnowledge({
 底层 OAuth 2.0 + PKCE 客户端，适用于需要自定义授权流程的场景。
 
 ```typescript
-import { OAuthClient, generatePKCE } from '@mindvault/sdk'
+import { OAuthClient, generatePKCE } from '@aincore/sdk'
 
 const { codeVerifier, codeChallenge } = await generatePKCE()
 const oauth = new OAuthClient({ clientId: 'your-app-id' })

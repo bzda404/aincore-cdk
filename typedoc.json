@@ -1,7 +1,7 @@
 {
   "entryPoints": ["src/index.ts"],
   "out": "../../docs/api/sdk",
-  "name": "@mindvault/sdk",
+  "name": "@aincore/sdk",
   "readme": "README.md",
   "excludePrivate": true,
   "excludeInternal": true,

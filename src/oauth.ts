@@ -1,7 +1,7 @@
 /**
  * OAuth 2.0 Client — PKCE Authorization Code Flow 实现
  *
- * 用于 @mindvault/sdk 中完成完整的 OAuth 2.0 授权流程:
+ * 用于 @aincore/sdk 中完成完整的 OAuth 2.0 授权流程:
  *   1. 注册 OAuth 客户端 (oauth.register)
  *   2. 发起授权请求 (oauth.authorize) — PKCE S256
  *   3. 换取 access_token (oauth.token)

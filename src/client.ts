@@ -7,7 +7,7 @@
  *
  * @example OAuth 2.0 flow:
  * ```ts
- * import { MindVaultClient } from '@mindvault/sdk'
+ * import { MindVaultClient } from '@aincore/sdk'
  *
  * const mv = new MindVaultClient({ name: '我的研究助手' })
  * await mv.discover()
