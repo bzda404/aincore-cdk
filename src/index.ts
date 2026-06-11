@@ -1,5 +1,5 @@
-export { MindVaultClient } from './client'
-export { OAuthClient, generatePKCE } from './oauth'
+export { MindVaultClient } from './client.js'
+export { OAuthClient, generatePKCE } from './oauth.js'
 export type {
   MindVaultClientOptions,
   AuthRequest,
@@ -13,9 +13,9 @@ export type {
   SearchResult,
   NoteListItem,
   NoteContext,
-} from './types'
+} from './types.js'
 export type {
   OAuthClientConfig,
   OAuthTokenSet,
   OAuthIntrospection,
-} from './oauth'
+} from './oauth.js'

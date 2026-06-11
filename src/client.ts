@@ -37,8 +37,8 @@
  * const reply = await mv.chat({ messages: [{ role: 'user', content: '你好' }] })
  * ```
  */
-import { UDSTransport } from './transports/uds'
-import { OAuthClient, generatePKCE, type OAuthClientConfig, type OAuthTokenSet, type OAuthIntrospection } from './oauth'
+import { UDSTransport } from './transports/uds.js'
+import { OAuthClient, generatePKCE, type OAuthClientConfig, type OAuthTokenSet, type OAuthIntrospection } from './oauth.js'
 import type {
   MindVaultClientOptions,
   AuthRequest,
@@ -52,7 +52,7 @@ import type {
   SearchResult,
   NoteListItem,
   NoteContext,
-} from './types'
+} from './types.js'
 
 export type {
   MindVaultClientOptions,

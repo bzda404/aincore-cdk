@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { MindVaultClient } from '../client'
+import { MindVaultClient } from '../client.js'
 
 // Mock the UDS transport
 vi.mock('../transports/uds', () => {

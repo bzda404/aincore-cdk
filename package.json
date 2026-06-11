@@ -1,7 +1,7 @@
 {
   "name": "@mindvault/sdk",
   "version": "0.3.0",
-  "description": "MindVault Client SDK — 将您的应用快速接入 MindVault Core 本地 AI 生态",
+  "description": "MindVault Client SDK \u2014 \u5c06\u60a8\u7684\u5e94\u7528\u5feb\u901f\u63a5\u5165 MindVault Core \u672c\u5730 AI \u751f\u6001",
   "license": "MIT",
   "type": "module",
   "private": false,
@@ -9,12 +9,12 @@
     "access": "public"
   },
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
     }
   },

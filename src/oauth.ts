@@ -11,7 +11,7 @@
  */
 
 import { randomBytes, createHash } from 'crypto'
-import type { UDSTransport } from './transports/uds'
+import type { UDSTransport } from './transports/uds.js'
 
 export interface OAuthClientConfig {
   client_id: string
