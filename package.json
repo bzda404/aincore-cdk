@@ -1,0 +1,57 @@
+{
+  "name": "@mindvault/sdk",
+  "version": "0.3.0",
+  "description": "MindVault Client SDK — 将您的应用快速接入 MindVault Core 本地 AI 生态",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "tsc",
+    "lint": "tsc --noEmit",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "mindvault",
+    "ai",
+    "llm",
+    "local-ai",
+    "mindvault-core",
+    "mcp",
+    "oauth",
+    "pkce"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bzda404/mindvault-sdk.git"
+  },
+  "homepage": "https://github.com/bzda404/mindvault-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/bzda404/mindvault-sdk/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "prettier": "^3.8.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.6"
+  }
+}
