@@ -1,15 +1,15 @@
 /**
- * MindVault SDK — Type definitions
+ * AinCore SDK — Type definitions
  */
 
-export interface MindVaultClientOptions {
+export interface AinCoreClientOptions {
   /** 应用名称（显示在授权弹窗中） */
   name: string
   /** 应用图标（emoji 或 URL） */
   icon?: string
   /** 开发者名称 */
   vendor?: string
-  /** UDS socket 路径覆盖（默认 /tmp/mindvault.sock） */
+  /** UDS socket 路径覆盖（默认 /tmp/aincore.sock） */
   socketPath?: string
   /** 请求超时 (ms)，默认 120000 */
   timeoutMs?: number

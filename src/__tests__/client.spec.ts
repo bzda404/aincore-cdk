@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { MindVaultClient } from '../client.js'
+import { AinCoreClient } from '../client.js'
 
 // Mock the UDS transport
 vi.mock('../transports/uds', () => {
@@ -13,8 +13,8 @@ vi.mock('../transports/uds', () => {
   }
 })
 
-describe('MindVaultClient', () => {
-  let client: MindVaultClient
+describe('AinCoreClient', () => {
+  let client: AinCoreClient
   let transport: {
     connect: ReturnType<typeof vi.fn>
     call: ReturnType<typeof vi.fn>
@@ -23,7 +23,7 @@ describe('MindVaultClient', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    client = new MindVaultClient({ name: 'TestApp', vendor: 'TestVendor' })
+    client = new AinCoreClient({ name: 'TestApp', vendor: 'TestVendor' })
     // Access the mocked transport via the private field
     transport = (client as unknown as { transport: typeof transport }).transport
   })

@@ -1,5 +1,5 @@
 /**
- * MindVaultClient — 第三方应用接入 MindVault Core 的主入口
+ * AinCoreClient — 第三方应用接入 AinCore 的主入口
  *
  * 支持两种授权方式:
  *   1. OAuth 2.0 + PKCE (推荐) — 完整的 client 注册、授权码流程、token 刷新
@@ -7,9 +7,9 @@
  *
  * @example OAuth 2.0 flow:
  * ```ts
- * import { MindVaultClient } from '@aincore/sdk'
+ * import { AinCoreClient } from '@aincore/sdk'
  *
- * const mv = new MindVaultClient({ name: '我的研究助手' })
+ * const mv = new AinCoreClient({ name: '我的研究助手' })
  * await mv.discover()
  *
  * // OAuth 注册
@@ -31,7 +31,7 @@
  *
  * @example Legacy simple auth:
  * ```ts
- * const mv = new MindVaultClient({ name: '我的研究助手' })
+ * const mv = new AinCoreClient({ name: '我的研究助手' })
  * await mv.discover()
  * await mv.requestAuth({ models: ['Qwen3.5-0.8B'] })
  * const reply = await mv.chat({ messages: [{ role: 'user', content: '你好' }] })
@@ -40,7 +40,7 @@
 import { UDSTransport } from './transports/uds.js'
 import { OAuthClient, generatePKCE, type OAuthClientConfig, type OAuthTokenSet, type OAuthIntrospection } from './oauth.js'
 import type {
-  MindVaultClientOptions,
+  AinCoreClientOptions,
   AuthRequest,
   AuthResult,
   DiscoveryResult,
@@ -56,7 +56,7 @@ import type {
 } from './types.js'
 
 export type {
-  MindVaultClientOptions,
+  AinCoreClientOptions,
   AuthRequest,
   AuthResult,
   DiscoveryResult,
@@ -74,7 +74,7 @@ export type {
   OAuthIntrospection,
 }
 
-export class MindVaultClient {
+export class AinCoreClient {
   private transport: UDSTransport
   public oauth: OAuthClient
   private appId: string | null = null
@@ -84,7 +84,7 @@ export class MindVaultClient {
   private appVendor: string
   private useOAuth = false
 
-  constructor(options: MindVaultClientOptions) {
+  constructor(options: AinCoreClientOptions) {
     this.transport = new UDSTransport(options.socketPath)
     this.oauth = new OAuthClient(this.transport)
     this.appName = options.name
@@ -96,7 +96,7 @@ export class MindVaultClient {
   // Discovery & Registration
   // ============================================================
 
-  /** 检测 MindVault Core 是否可用 */
+  /** 检测 AinCore 是否可用 */
   async discover(): Promise<DiscoveryResult | null> {
     const connected = await this.transport.connect()
     if (!connected) return null
@@ -107,7 +107,7 @@ export class MindVaultClient {
     }
   }
 
-  /** 注册应用到 MindVault Core (旧版简单注册) */
+  /** 注册应用到 AinCore (旧版简单注册) */
   async register(): Promise<string> {
     const result = await this.transport.call('app.register', {
       name: this.appName,
@@ -202,7 +202,7 @@ export class MindVaultClient {
   // ============================================================
 
   /**
-   * 请求授权 — 触发 MindVault Core UI 弹窗，用户确认后获得 session_token
+   * 请求授权 — 触发 AinCore UI 弹窗，用户确认后获得 session_token
    * 如果尚未注册，会自动注册。
    */
   async requestAuth(auth: AuthRequest): Promise<AuthResult> {

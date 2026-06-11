@@ -1,15 +1,15 @@
-import { MindVaultClient } from '../src/index'
+import { AinCoreClient } from '../src/index'
 
 async function main(): Promise<void> {
-  const client = new MindVaultClient({
-    name: 'MindVault SDK Example',
-    vendor: 'MindVault',
+  const client = new AinCoreClient({
+    name: 'AinCore SDK Example',
+    vendor: 'AinCore',
     icon: 'SDK',
   })
 
   const discovery = await client.discover()
   if (!discovery) {
-    throw new Error('MindVault Core 未运行。请先启动 pnpm run dev:hub')
+    throw new Error('AinCore 未运行。请先启动 pnpm run dev:hub')
   }
   console.log(`Core 已连接: ${discovery.name} (${discovery.transport || 'uds'})`)
 
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
   }
 
   const result = await client.chat({
-    messages: [{ role: 'user', content: '用一句话介绍 MindVault Core。' }],
+    messages: [{ role: 'user', content: '用一句话介绍 AinCore。' }],
     max_tokens: 80,
     temperature: 0.2,
   })

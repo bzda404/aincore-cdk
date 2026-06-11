@@ -1,13 +1,13 @@
 /**
- * UDS Transport — 连接 MindVault Core 的底层通信层
+ * UDS Transport — 连接 AinCore 的底层通信层
  * 纯 Node.js 实现，零依赖
  */
 import { connect, type Socket } from 'net'
 import { platform } from 'os'
 
 const DEFAULT_SOCKET_PATH = platform() === 'win32'
-  ? '\\\\.\\pipe\\mindvault'
-  : '/tmp/mindvault.sock'
+  ? '\\\\.\\pipe\\aincore'
+  : '/tmp/aincore.sock'
 
 interface PendingCall {
   resolve: (value: unknown) => void
@@ -26,7 +26,7 @@ export class UDSTransport {
     this.socketPath = socketPath || DEFAULT_SOCKET_PATH
   }
 
-  /** 连接到 MindVault Core */
+  /** 连接到 AinCore */
   async connect(): Promise<boolean> {
     if (this.connected) return true
 
@@ -67,7 +67,7 @@ export class UDSTransport {
   async call(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
     if (!this.connected || !this.socket) {
       const reconnected = await this.connect()
-      if (!reconnected) throw new Error('无法连接到 MindVault Core')
+      if (!reconnected) throw new Error('无法连接到 AinCore')
     }
 
     const id = ++this.requestId

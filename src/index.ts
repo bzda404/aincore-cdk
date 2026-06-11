@@ -1,7 +1,7 @@
-export { MindVaultClient } from './client.js'
+export { AinCoreClient } from './client.js'
 export { OAuthClient, generatePKCE } from './oauth.js'
 export type {
-  MindVaultClientOptions,
+  AinCoreClientOptions,
   AuthRequest,
   AuthResult,
   DiscoveryResult,
