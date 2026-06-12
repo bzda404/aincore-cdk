@@ -80,6 +80,8 @@ export interface ChatParams {
   max_tokens?: number
   temperature?: number
   model?: string
+  /** Extra params passed through to the server (e.g. _skip_profile_injection) */
+  extra?: Record<string, unknown>
 }
 
 export interface ChatResult {

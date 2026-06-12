@@ -258,6 +258,7 @@ export class AinCoreClient {
       max_tokens: params.max_tokens ?? 512,
       temperature: params.temperature ?? 0.7,
       model: params.model,
+      ...(params.extra || {}),
     })
     return normalizeChatResult(result)
   }

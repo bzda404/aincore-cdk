@@ -9,9 +9,13 @@ const DEFAULT_SOCKET_PATH = platform() === 'win32'
   ? '\\\\.\\pipe\\aincore'
   : '/tmp/aincore.sock'
 
+// Default timeout: 150s (longer than OAuth consent popup timeout of 120s)
+const DEFAULT_CALL_TIMEOUT_MS = 150_000
+
 interface PendingCall {
   resolve: (value: unknown) => void
   reject: (reason: Error) => void
+  timeout: ReturnType<typeof setTimeout>
 }
 
 export class UDSTransport {
@@ -48,6 +52,7 @@ export class UDSTransport {
           this.connected = false
           this.socket = null
           for (const pending of this.pendingCalls.values()) {
+            clearTimeout(pending.timeout)
             pending.reject(new Error('连接已关闭'))
           }
           this.pendingCalls.clear()
@@ -64,7 +69,11 @@ export class UDSTransport {
   }
 
   /** 发送 JSON-RPC 请求 */
-  async call(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
+  async call(
+    method: string,
+    params: Record<string, unknown> = {},
+    timeoutMs: number = DEFAULT_CALL_TIMEOUT_MS,
+  ): Promise<unknown> {
     if (!this.connected || !this.socket) {
       const reconnected = await this.connect()
       if (!reconnected) throw new Error('无法连接到 AinCore')
@@ -74,7 +83,22 @@ export class UDSTransport {
     const message = JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n'
 
     return new Promise((resolve, reject) => {
-      this.pendingCalls.set(id, { resolve, reject })
+      const timer = setTimeout(() => {
+        this.pendingCalls.delete(id)
+        reject(new Error(`请求超时 (${timeoutMs}ms): ${method}`))
+      }, timeoutMs)
+
+      this.pendingCalls.set(id, {
+        resolve: (value) => {
+          clearTimeout(timer)
+          resolve(value)
+        },
+        reject: (reason) => {
+          clearTimeout(timer)
+          reject(reason)
+        },
+        timeout: timer,
+      })
       this.socket!.write(message)
     })
   }
