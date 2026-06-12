@@ -1,6 +1,6 @@
 {
   "name": "@aincore/sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AinCore Client SDK \u2014 \u5c06\u60a8\u7684\u5e94\u7528\u5feb\u901f\u63a5\u5165 AinCore \u672c\u5730 AI \u751f\u6001",
   "license": "MIT",
   "type": "module",
