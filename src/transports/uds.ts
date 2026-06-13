@@ -9,8 +9,8 @@ const DEFAULT_SOCKET_PATH = platform() === 'win32'
   ? '\\\\.\\pipe\\aincore'
   : '/tmp/aincore.sock'
 
-// Default timeout: 150s (longer than OAuth consent popup timeout of 120s)
 const DEFAULT_CALL_TIMEOUT_MS = 150_000
+const DEFAULT_CONNECT_TIMEOUT_MS = 5_000
 
 interface PendingCall {
   resolve: (value: unknown) => void
@@ -25,54 +25,36 @@ export class UDSTransport {
   private requestId = 0
   private connected = false
   private socketPath: string
+  private defaultTimeoutMs: number
+  private connectTimeoutMs: number
 
-  constructor(socketPath?: string) {
+  /** In-flight connect promise — reused to prevent concurrent connect() races */
+  private connecting: Promise<boolean> | null = null
+
+  constructor(socketPath?: string, options?: { timeoutMs?: number; connectTimeoutMs?: number }) {
     this.socketPath = socketPath || DEFAULT_SOCKET_PATH
+    this.defaultTimeoutMs = options?.timeoutMs ?? DEFAULT_CALL_TIMEOUT_MS
+    this.connectTimeoutMs = options?.connectTimeoutMs ?? DEFAULT_CONNECT_TIMEOUT_MS
   }
 
-  /** 连接到 AinCore */
+  /** 连接到 AinCore（并发安全：多次调用复用同一个连接 promise） */
   async connect(): Promise<boolean> {
     if (this.connected) return true
+    if (this.connecting) return this.connecting
 
-    return new Promise((resolve) => {
-      try {
-        this.socket = connect(this.socketPath)
-
-        this.socket.on('connect', () => {
-          this.connected = true
-          resolve(true)
-        })
-
-        this.socket.on('data', (data: Buffer) => {
-          this.buffer += data.toString()
-          this.processBuffer()
-        })
-
-        this.socket.on('close', () => {
-          this.connected = false
-          this.socket = null
-          for (const pending of this.pendingCalls.values()) {
-            clearTimeout(pending.timeout)
-            pending.reject(new Error('连接已关闭'))
-          }
-          this.pendingCalls.clear()
-        })
-
-        this.socket.on('error', () => {
-          this.connected = false
-          resolve(false)
-        })
-      } catch {
-        resolve(false)
-      }
-    })
+    this.connecting = this.doConnect()
+    try {
+      return await this.connecting
+    } finally {
+      this.connecting = null
+    }
   }
 
   /** 发送 JSON-RPC 请求 */
   async call(
     method: string,
     params: Record<string, unknown> = {},
-    timeoutMs: number = DEFAULT_CALL_TIMEOUT_MS,
+    timeoutMs?: number,
   ): Promise<unknown> {
     if (!this.connected || !this.socket) {
       const reconnected = await this.connect()
@@ -81,30 +63,35 @@ export class UDSTransport {
 
     const id = ++this.requestId
     const message = JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n'
+    const callTimeout = timeoutMs ?? this.defaultTimeoutMs
 
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pendingCalls.delete(id)
-        reject(new Error(`请求超时 (${timeoutMs}ms): ${method}`))
-      }, timeoutMs)
+        reject(new Error(`请求超时 (${callTimeout}ms): ${method}`))
+      }, callTimeout)
 
-      this.pendingCalls.set(id, {
-        resolve: (value) => {
-          clearTimeout(timer)
-          resolve(value)
-        },
-        reject: (reason) => {
-          clearTimeout(timer)
-          reject(reason)
-        },
+      const pending: PendingCall = {
+        resolve: (value) => { clearTimeout(timer); resolve(value) },
+        reject:  (reason) => { clearTimeout(timer); reject(reason) },
         timeout: timer,
+      }
+      this.pendingCalls.set(id, pending)
+
+      // Catch write errors synchronously — reject the pending call immediately
+      this.socket!.write(message, (err) => {
+        if (err) {
+          this.pendingCalls.delete(id)
+          clearTimeout(timer)
+          reject(new Error(`写入失败: ${err.message}`))
+        }
       })
-      this.socket!.write(message)
     })
   }
 
   /** 断开连接 */
   disconnect(): void {
+    this.connecting = null
     if (this.socket) {
       this.socket.destroy()
       this.socket = null
@@ -114,6 +101,57 @@ export class UDSTransport {
 
   get isConnected(): boolean {
     return this.connected
+  }
+
+  // ============================================================
+  // Private
+  // ============================================================
+
+  private doConnect(): Promise<boolean> {
+    return new Promise((resolve) => {
+      const socket = connect(this.socketPath)
+
+      // Connection timeout — prevents hanging indefinitely
+      const timeout = setTimeout(() => {
+        socket.destroy()
+        resolve(false)
+      }, this.connectTimeoutMs)
+
+      socket.once('connect', () => {
+        clearTimeout(timeout)
+        this.socket = socket
+        this.connected = true
+        this.attachSocketListeners(socket)
+        resolve(true)
+      })
+
+      socket.once('error', () => {
+        clearTimeout(timeout)
+        resolve(false)
+      })
+    })
+  }
+
+  private attachSocketListeners(socket: Socket): void {
+    socket.on('data', (data: Buffer) => {
+      this.buffer += data.toString()
+      this.processBuffer()
+    })
+
+    socket.on('close', () => {
+      this.connected = false
+      this.socket = null
+      const error = new Error('连接已关闭')
+      for (const pending of this.pendingCalls.values()) {
+        clearTimeout(pending.timeout)
+        pending.reject(error)
+      }
+      this.pendingCalls.clear()
+    })
+
+    socket.on('error', () => {
+      this.connected = false
+    })
   }
 
   private processBuffer(): void {
@@ -134,7 +172,7 @@ export class UDSTransport {
           }
         }
       } catch {
-        // 忽略无效消息
+        // 服务端发送了非 JSON 数据，忽略
       }
     }
   }

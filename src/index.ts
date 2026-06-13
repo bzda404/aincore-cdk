@@ -5,6 +5,7 @@ export type {
   AuthRequest,
   AuthResult,
   DiscoveryResult,
+  CoreStatus,
   KnowledgeBaseGrant,
   KnowledgeBaseAuthRequest,
   ModelInfo,

@@ -85,7 +85,9 @@ export class AinCoreClient {
   private useOAuth = false
 
   constructor(options: AinCoreClientOptions) {
-    this.transport = new UDSTransport(options.socketPath)
+    this.transport = new UDSTransport(options.socketPath, {
+      timeoutMs: options.timeoutMs,
+    })
     this.oauth = new OAuthClient(this.transport)
     this.appName = options.name
     this.appIcon = options.icon || ''
@@ -226,10 +228,8 @@ export class AinCoreClient {
 
   /** 查询当前应用的授权范围 */
   async listGrants(): Promise<{ models: string[]; kb_paths: string[]; kb_grants?: KnowledgeBaseGrant[] }> {
-    this.ensureAuth()
-    return this.transport.call('app.list_grants', {
-      session_token: this.sessionToken,
-    }) as Promise<{ models: string[]; kb_paths: string[]; kb_grants?: KnowledgeBaseGrant[] }>
+    const auth = await this.resolveAuthParams()
+    return this.transport.call('app.list_grants', auth) as Promise<{ models: string[]; kb_paths: string[]; kb_grants?: KnowledgeBaseGrant[] }>
   }
 
   /** 撤销所有授权 */
