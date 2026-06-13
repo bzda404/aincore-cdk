@@ -238,7 +238,9 @@ export class AinCoreClient {
       await this.oauth.revokeClient()
       return
     }
-    this.ensureAuth()
+    if (!this.sessionToken) {
+      throw new Error('未授权 — 请先调用 requestAuth() 或完成 OAuth 流程')
+    }
     await this.transport.call('app.revoke_auth', {
       session_token: this.sessionToken,
     })
@@ -374,30 +376,14 @@ export class AinCoreClient {
    * - 如果使用 OAuth，返回 access_token
    * - 如果使用旧版 session token，返回 session_token
    */
-  private async resolveAuthToken(): Promise<string> {
-    if (this.useOAuth) {
-      return this.oauth.getAccessToken()
-    }
-    return this.ensureSessionToken()
-  }
-
   private async resolveAuthParams(): Promise<{ access_token: string } | { session_token: string }> {
     if (this.useOAuth) {
       return { access_token: await this.oauth.getAccessToken() }
     }
-    return { session_token: this.ensureSessionToken() }
-  }
-
-  private ensureSessionToken(): string {
     if (!this.sessionToken) {
       throw new Error('未授权 — 请先调用 requestAuth() 或完成 OAuth 流程')
     }
-    return this.sessionToken
-  }
-
-  private ensureAuth(): void {
-    if (this.useOAuth) return
-    this.ensureSessionToken()
+    return { session_token: this.sessionToken }
   }
 }
 
